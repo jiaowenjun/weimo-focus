@@ -3,7 +3,7 @@
 `weimo-focus`（自 weimo monorepo 的 `weimo-time` 目录独立）是单机 backend + HTTP-only CLI。当前 Cargo workspace 有两个成员：
 
 - `tracker-backend`：SQLite、领域规则、Calendar 和 `/api/v1` 的唯一所有者。
-- `tracker-cli`：只通过 HTTP 使用 backend，不依赖 SQLx、CSV 或 Calendar 脚本。
+- `record-event`：交互式录入新事件的 CLI，只通过 HTTP 使用 backend，不依赖 SQLx、CSV 或 Calendar 脚本。
 
 运行时数据保存在 `data/tracker.sqlite3`，当前 backend 不再读取或写入 CSV。数据库升级后只保留事件和同步状态，不保留旧 CSV 的迁移元数据。
 
@@ -21,14 +21,10 @@ cargo run -p tracker-backend --locked -- \
 另一个终端运行 CLI：
 
 ```bash
-cargo run -p tracker-cli --locked -- entry
-cargo run -p tracker-cli --locked -- entry --save-only
-cargo run -p tracker-cli --locked -- pending
-cargo run -p tracker-cli --locked -- sync
-cargo run -p tracker-cli --locked -- sync --event-id EVENT_ID
+cargo run -p record-event --locked
 ```
 
-`entry` 固定使用 `学习` 日历（不提示输入日历），日期、开始时间、结束时间、数量、重复结论和 marker 均由客户端准备后提交给 backend。CLI 默认使用当前时间减 30 分钟后按 10 分钟向下对齐，并提交 30 分钟事件；backend 接收任意合法日期、开始时间和结束时间（要求结束晚于开始）。默认操作是保存并同步；Calendar 失败时事件保留为 pending，CLI 明确显示“已保存但尚未同步”并返回 `1`。
+CLI 固定使用 `学习` 日历（不提示输入日历），日期、开始时间、结束时间、数量、重复结论和 marker 均由客户端准备后提交给 backend。CLI 默认使用当前时间减 30 分钟后按 10 分钟向下对齐，并提交 30 分钟事件；backend 接收任意合法日期、开始时间和结束时间（要求结束晚于开始）。操作为保存并同步；Calendar 失败时事件保留为 pending，CLI 明确显示“已保存但尚未同步”并返回 `1`。
 
 ## API 契约
 

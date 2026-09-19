@@ -1086,6 +1086,20 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "f8dcc9c7d52a811697d2151c701e0d08956f92b0e24136cf4cf27b57a6a0d9bf"
 
 [[package]]
+name = "record-event"
+version = "0.1.0"
+dependencies = [
+ "crossterm",
+ "inquire",
+ "reqwest",
+ "serde",
+ "serde_json",
+ "tempfile",
+ "thiserror",
+ "time",
+]
+
+[[package]]
 name = "redox_syscall"
 version = "0.5.18"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1752,21 +1766,6 @@ dependencies = [
  "tracing",
  "tracing-subscriber",
  "uuid",
-]
-
-[[package]]
-name = "tracker-cli"
-version = "0.1.0"
-dependencies = [
- "clap",
- "crossterm",
- "inquire",
- "reqwest",
- "serde",
- "serde_json",
- "tempfile",
- "thiserror",
- "time",
 ]
 
 [[package]]

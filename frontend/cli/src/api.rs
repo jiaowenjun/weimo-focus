@@ -7,8 +7,7 @@ use serde::de::DeserializeOwned;
 use thiserror::Error;
 
 use crate::types::{
-    BatchSyncResult, BootstrapView, CreateEventCommand, CreateEventResult, ErrorEnvelope,
-    EventInput, EventPage, EventPreview, SyncEventResult,
+    BootstrapView, CreateEventCommand, CreateEventResult, ErrorEnvelope, EventInput, EventPreview,
 };
 
 #[derive(Debug, Error)]
@@ -39,9 +38,6 @@ pub trait TrackerApi {
     fn bootstrap(&self) -> Result<BootstrapView, ApiError>;
     fn preview(&self, input: &EventInput) -> Result<EventPreview, ApiError>;
     fn create(&self, command: &CreateEventCommand) -> Result<CreateEventResult, ApiError>;
-    fn pending(&self, limit: u32) -> Result<EventPage, ApiError>;
-    fn sync_event(&self, event_id: &str) -> Result<SyncEventResult, ApiError>;
-    fn sync_pending(&self) -> Result<BatchSyncResult, ApiError>;
 }
 
 #[derive(Debug, Clone)]
@@ -131,27 +127,6 @@ impl TrackerApi for ApiClient {
                 .json(command)
                 .send(),
         )
-    }
-
-    fn pending(&self, limit: u32) -> Result<EventPage, ApiError> {
-        let mut url = reqwest::Url::parse(&self.url("/api/v1/events"))
-            .map_err(|error| ApiError::Protocol(error.to_string()))?;
-        url.query_pairs_mut()
-            .append_pair("status", "pending")
-            .append_pair("limit", &limit.to_string());
-        self.decode(self.client.get(url).send())
-    }
-
-    fn sync_event(&self, event_id: &str) -> Result<SyncEventResult, ApiError> {
-        self.decode(
-            self.client
-                .post(self.url(&format!("/api/v1/events/{event_id}/sync")))
-                .send(),
-        )
-    }
-
-    fn sync_pending(&self) -> Result<BatchSyncResult, ApiError> {
-        self.decode(self.client.post(self.url("/api/v1/sync")).send())
     }
 }
 

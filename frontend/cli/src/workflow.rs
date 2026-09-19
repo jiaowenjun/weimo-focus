@@ -20,7 +20,7 @@ pub enum WorkflowError {
     Cancelled,
     #[error("用户中断录入")]
     Interrupted,
-    #[error("entry 命令需要在交互式终端中运行")]
+    #[error("record-event 需要在交互式终端中运行")]
     NotInteractive,
     #[error("终端输入失败: {0}")]
     Prompt(String),
@@ -123,7 +123,6 @@ impl Prompter for InquirePrompter {
 pub fn run_entry(
     api: &impl TrackerApi,
     prompter: &mut impl Prompter,
-    save_only: bool,
 ) -> Result<i32, WorkflowError> {
     let bootstrap = api.bootstrap()?;
     let (event_date, start_time, end_time) = default_event_times()?;
@@ -180,14 +179,9 @@ pub fn run_entry(
         prompter.display("已取消，数据库未修改。");
         return Ok(0);
     }
-    let action = if save_only {
-        CreateAction::Save
-    } else {
-        CreateAction::SaveAndSync
-    };
     let result = api.create(&CreateEventCommand {
         event,
-        action,
+        action: CreateAction::SaveAndSync,
         allow_duplicate,
     })?;
     match result.sync.status {
@@ -210,8 +204,8 @@ pub fn run_entry(
                 .map(|error| format!("{}: {}", error.code, error.message))
                 .unwrap_or_else(|| "未知 Calendar 错误".into());
             prompter.display(&format!(
-                "事件已保存但尚未同步：{}\n{}\n可运行 `tracker-cli sync --event-id {}` 重试。",
-                result.event.id, detail, result.event.id
+                "事件已保存但尚未同步：{}\n{}\n事件保留为待同步状态。",
+                result.event.id, detail
             ));
             Ok(1)
         }
@@ -412,18 +406,6 @@ mod tests {
                 },
             })
         }
-
-        fn pending(&self, _limit: u32) -> Result<crate::types::EventPage, ApiError> {
-            unreachable!()
-        }
-
-        fn sync_event(&self, _event_id: &str) -> Result<crate::types::SyncEventResult, ApiError> {
-            unreachable!()
-        }
-
-        fn sync_pending(&self) -> Result<crate::types::BatchSyncResult, ApiError> {
-            unreachable!()
-        }
     }
 
     struct FakePrompter {
@@ -491,7 +473,7 @@ mod tests {
             messages: Vec::new(),
         };
 
-        assert_eq!(run_entry(&api, &mut prompter, false).unwrap(), 1);
+        assert_eq!(run_entry(&api, &mut prompter).unwrap(), 1);
         let command = api.command.lock().unwrap().clone().unwrap();
         assert!(command.allow_duplicate);
         assert_eq!(command.action, CreateAction::SaveAndSync);

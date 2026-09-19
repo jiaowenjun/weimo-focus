@@ -117,28 +117,6 @@ pub struct CreateEventResult {
 }
 
 #[derive(Debug, Clone, Deserialize, Eq, PartialEq)]
-pub struct SyncEventResult {
-    pub event: EventView,
-    pub sync: SyncOutcome,
-}
-
-#[derive(Debug, Clone, Deserialize, Eq, PartialEq)]
-pub struct BatchSyncResult {
-    pub attempted: usize,
-    pub succeeded: usize,
-    pub failed: usize,
-    pub results: Vec<SyncEventResult>,
-}
-
-#[derive(Debug, Clone, Deserialize, Eq, PartialEq)]
-pub struct EventPage {
-    pub items: Vec<EventView>,
-    pub total_count: i64,
-    pub limit: u32,
-    pub offset: u32,
-}
-
-#[derive(Debug, Clone, Deserialize, Eq, PartialEq)]
 pub struct ErrorEnvelope {
     pub error: ApiErrorBody,
 }

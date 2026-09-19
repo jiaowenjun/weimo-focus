@@ -1,12 +1,11 @@
 [package]
-name = "tracker-cli"
+name = "record-event"
 version = "0.1.0"
 edition = "2024"
 rust-version = "1.94"
-description = "HTTP-only CLI for Weimo time tracker"
+description = "Interactive CLI to record new events for Weimo time tracker via HTTP"
 
 [dependencies]
-clap = { version = "4.6.0", features = ["derive"] }
 crossterm = "0.29.0"
 inquire = "0.9.4"
 reqwest = { version = "0.13.2", default-features = false, features = ["blocking", "json"] }
