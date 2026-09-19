@@ -3,7 +3,8 @@ name = "record-event"
 version = "0.1.0"
 edition = "2024"
 rust-version = "1.94"
-description = "Interactive CLI to record new events for Weimo time tracker via HTTP"
+description = "Interactive CLIs to record and time new events for Weimo time tracker via HTTP"
+default-run = "record-event"
 
 [dependencies]
 crossterm = "0.29.0"

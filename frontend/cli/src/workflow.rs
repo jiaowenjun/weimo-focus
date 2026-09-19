@@ -10,7 +10,7 @@ use crate::types::{CreateAction, CreateEventCommand, EventInput, SyncOutcomeStat
 mod numeric_prompt;
 
 const SUGGESTION_LIMIT: usize = 10;
-const TARGET_CALENDAR: &str = "学习";
+pub(crate) const TARGET_CALENDAR: &str = "学习";
 
 #[derive(Debug, Error)]
 pub enum WorkflowError {
@@ -184,6 +184,13 @@ pub fn run_entry(
         action: CreateAction::SaveAndSync,
         allow_duplicate,
     })?;
+    display_create_result(prompter, result)
+}
+
+pub(crate) fn display_create_result(
+    prompter: &mut impl Prompter,
+    result: crate::types::CreateEventResult,
+) -> Result<i32, WorkflowError> {
     match result.sync.status {
         SyncOutcomeStatus::NotRequested => {
             prompter.display(&format!("已保存为待同步事件：{}", result.event.id));
@@ -236,7 +243,7 @@ fn default_event_times() -> Result<(String, String, String), WorkflowError> {
     ))
 }
 
-fn prompt_nonempty(
+pub(crate) fn prompt_nonempty(
     prompter: &mut impl Prompter,
     message: &str,
     default: Option<&str>,
@@ -252,7 +259,7 @@ fn prompt_nonempty(
     }
 }
 
-fn prompt_result<T>(result: Result<T, PromptSignal>) -> Result<T, WorkflowError> {
+pub(crate) fn prompt_result<T>(result: Result<T, PromptSignal>) -> Result<T, WorkflowError> {
     match result {
         Ok(value) => Ok(value),
         Err(PromptSignal::Cancelled) => Err(WorkflowError::Cancelled),
@@ -262,7 +269,7 @@ fn prompt_result<T>(result: Result<T, PromptSignal>) -> Result<T, WorkflowError>
     }
 }
 
-fn sync_status_text(status: SyncStatus) -> &'static str {
+pub(crate) fn sync_status_text(status: SyncStatus) -> &'static str {
     match status {
         SyncStatus::Pending => "待同步",
         SyncStatus::Synced => "已同步",
