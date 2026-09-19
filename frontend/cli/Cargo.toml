@@ -1,0 +1,19 @@
+[package]
+name = "tracker-cli"
+version = "0.1.0"
+edition = "2024"
+rust-version = "1.94"
+description = "HTTP-only CLI for Weimo time tracker"
+
+[dependencies]
+clap = { version = "4.6.0", features = ["derive"] }
+crossterm = "0.29.0"
+inquire = "0.9.4"
+reqwest = { version = "0.13.2", default-features = false, features = ["blocking", "json"] }
+serde = { version = "1.0.228", features = ["derive"] }
+serde_json = "1.0.149"
+thiserror = "2.0.18"
+time = { version = "0.3.55", features = ["local-offset"] }
+
+[dev-dependencies]
+tempfile = "3.27.0"

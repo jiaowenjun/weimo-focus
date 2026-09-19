@@ -1,0 +1,19 @@
+target/
+*.csv.lock
+
+# Runtime SQLite database and lock files
+data/
+
+# Local tooling
+.venv
+.DS_Store
+
+# Frontend build and dependency output (frontend/web)
+node_modules
+dist
+output
+*.local
+
+# Logs
+logs
+*.log
